@@ -1,6 +1,5 @@
 import joplin from 'api'
 import { v4 as uuidv4 } from 'uuid';
-import { exportToSvg } from "@excalidraw/excalidraw";
 
 import { ContentScriptType, ToolbarButtonLocation, MenuItem, MenuItemLocation } from 'api/types'
 import { createDiagramResource, getDiagramResource, updateDiagramResource, clearDiskCache } from './resources';
@@ -47,13 +46,8 @@ const openDialog = async (diagramId: string, isNewDiagram: boolean) => {
   if (dialogResult.id === 'ok') {
     if (isNewDiagram) {
       let diagramJson = dialogResult.formData.main.excalidraw_diagram_json;
-      let jsonObject = JSON.parse(diagramJson);
-      let r = exportToSvg({elements: jsonObject.elements, appState: jsonObject.appState, files: null})
-      r.then(async (svgEle) => {
-        console.log(svgEle)
       diagramId = await createDiagramResource(diagramJson)
       await joplin.commands.execute('insertText', diagramMarkdown(diagramId))
-      })
     } else {
       await updateDiagramResource(diagramId, dialogResult.formData.main.excalidraw_diagram_json)
     }

@@ -17,6 +17,10 @@ try {
   console.error("error: ", d)
 }
 
+const renderSvg = () => {
+  alert('svg ok')
+}
+
 const App = () => {
   const excalidrawWrapperRef = React.useRef(null);
 
@@ -38,7 +42,18 @@ const App = () => {
           );
           (window.parent.document.getElementById('excalidraw_diagram_json') as HTMLInputElement).value = excalidrawJson;
         },
-      })
+      },
+      React.createElement(ExcalidrawLib.MainMenu),
+      React.createElement(ExcalidrawLib.Footer, null, 
+        React.createElement(
+          "button",
+          {
+            className: "excalidraw-footer-render-svg",
+            ref: excalidrawWrapperRef,
+            onClick : renderSvg
+          },
+          "Render SVG"
+        )))
     )
   );
 };
