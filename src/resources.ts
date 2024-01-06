@@ -45,14 +45,14 @@ export async function getDiagramResource(diagramId: string): Promise<{ body: str
     }
 }
 
-export async function updateDiagramResource(diagramId:string, dataJson:string): Promise<string> {
+export async function updateDiagramResource(diagramId:string, dataJson:string, dataSvg: string): Promise<string> {
     let filePath = await writeJsonFile(diagramId, dataJson)
     await joplin.data.put(['resources', diagramId], null, {title: buildTitle(dataJson) }, [{ path: filePath }])
     return diagramId
 }
 
 
-export async function createDiagramResource(dataJson:string): Promise<string> {
+export async function createDiagramResource(dataJson:string, dataSvg: string): Promise<string> {
     let diagramId = generateId()
 
     let filePath = await writeJsonFile(diagramId, dataJson)

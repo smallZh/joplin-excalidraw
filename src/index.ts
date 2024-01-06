@@ -12,6 +12,7 @@ const buildDialogHTML = (diagramBody: string): string => {
   return `
 		<form name="main" style="display:none">
 			<input type="" name="excalidraw_diagram_json"  id="excalidraw_diagram_json" value='${diagramBody}'>
+			<input type="" name="excalidraw_diagram_svg"  id="excalidraw_diagram_svg" value=''>
 		</form>
 		`
 }
@@ -46,10 +47,13 @@ const openDialog = async (diagramId: string, isNewDiagram: boolean) => {
   if (dialogResult.id === 'ok') {
     if (isNewDiagram) {
       let diagramJson = dialogResult.formData.main.excalidraw_diagram_json;
-      diagramId = await createDiagramResource(diagramJson)
+      let diagramSvg = dialogResult.formData.main.excalidraw_diagram_svg;
+      diagramId = await createDiagramResource(diagramJson, diagramSvg)
       await joplin.commands.execute('insertText', diagramMarkdown(diagramId))
     } else {
-      await updateDiagramResource(diagramId, dialogResult.formData.main.excalidraw_diagram_json)
+      let diagramJson = dialogResult.formData.main.excalidraw_diagram_json;
+      let diagramSvg = dialogResult.formData.main.excalidraw_diagram_svg;
+      await updateDiagramResource(diagramId, diagramJson, diagramSvg)
     }
   }
 }
