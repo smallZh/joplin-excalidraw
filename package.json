@@ -1,6 +1,6 @@
 {
   "name": "joplin-plugin-joplin-excalidraw",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "scripts": {
     "dist:webview": "vite build --config vite-webview.config.ts --emptyOutDir",
     "dist:local": "vite build --config vite-local.config.ts --emptyOutDir",
@@ -18,6 +18,7 @@
   "devDependencies": {
     "@excalidraw/excalidraw": "0.17.2",
     "@types/node": "^14.0.14",
+    "@types/markdown-it": "^12.2.3",
     "chalk": "^4.1.0",
     "copy-webpack-plugin": "^6.1.0",
     "fs-extra": "^9.0.1",

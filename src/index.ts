@@ -18,10 +18,10 @@ const buildDialogHTML = (diagramBody: string): string => {
 }
 
 function diagramMarkdown(diagramId: string) {
-  return `![excalidraw](excalidraw://${diagramId})`
+  return `![excalidraw.svg](:/${diagramId})`
 }
 
-const openDialog = async (diagramId: string, isNewDiagram: boolean) => {
+const openDialog = async (diagramId: string, isNewDiagram: boolean): Promise<string | null> => {
   let diagramBody = "{}";
   const appPath = await joplin.plugins.installationDir();
 
@@ -56,6 +56,8 @@ const openDialog = async (diagramId: string, isNewDiagram: boolean) => {
       await updateDiagramResource(diagramId, diagramJson, diagramSvg)
     }
   }
+
+  return diagramId;
 }
 
 joplin.plugins.register({
@@ -71,11 +73,23 @@ joplin.plugins.register({
     await joplin.contentScripts.register(
       ContentScriptType.MarkdownItPlugin,
       Config.ContentScriptId,
-      './contentScript.js'
+      // './contentScript.js'
+      './contentScripts/markdownIt.js',
     );
 
-    await joplin.contentScripts.onMessage(Config.ContentScriptId, (message: any) => {
-      openDialog(message, false);
+    await joplin.contentScripts.onMessage(Config.ContentScriptId, async (message: any) => {
+      // Extract the ID
+      const fileURLMatch = /^(?:file|joplin[-a-z]+):\/\/.*\/([a-zA-Z0-9]+)[.]\w+(?:[?#]|$)/.exec(message);
+      const resourceLinkMatch = /^:\/([a-zA-Z0-9]+)$/.exec(message);
+
+      let resourceId: string | null = null;
+      if (fileURLMatch) {
+        resourceId = fileURLMatch[1];
+      } else if (resourceLinkMatch) {
+        resourceId = resourceLinkMatch[1];
+      }
+
+      return (await openDialog(resourceId, false));
     });
 
     await joplin.commands.register({

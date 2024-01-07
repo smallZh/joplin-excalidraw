@@ -50,6 +50,15 @@ const App = () => {
       },
       React.createElement(ExcalidrawLib.Excalidraw, {
         initialData: InitialData,
+        renderTopRightUI: () =>React.createElement(
+            "button",
+            {
+              className: "excalidraw-render-svg",
+              ref: excalidrawWrapperRef,
+              onClick : renderSvg
+            },
+            "Render SVG"
+        ),
         onChange: (elements, state) => {
           excalidrawData.elements = elements;
           excalidrawData.appState = state;
@@ -59,18 +68,8 @@ const App = () => {
           );
           (window.parent.document.getElementById('excalidraw_diagram_json') as HTMLInputElement).value = excalidrawJson;
         },
-      },React.createElement(ExcalidrawLib.MainMenu),
-        React.createElement(ExcalidrawLib.Footer, null, 
-          React.createElement(
-            "button",
-            {
-              className: "excalidraw-footer-render-svg",
-              ref: excalidrawWrapperRef,
-              onClick : renderSvg
-            },
-            "Render SVG"
-          ))
-      ),
+      },React.createElement(ExcalidrawLib.MainMenu, null, 
+        React.createElement(ExcalidrawLib.MainMenu.DefaultItems.ChangeCanvasBackground))),
       React.createElement(Toaster)
     )
   );

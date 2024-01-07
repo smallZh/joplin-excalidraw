@@ -1,6 +1,6 @@
 import { escapeHtml } from './htmlUtil';
 
-// Reference: 
+// Reference: https://github.com/personalizedrefrigerator/joplin-plugin-freehand-drawing/blob/main/src/dialog/webview/svgElementToString.ts
 const svgElementToString = (element: SVGElement) => {
 	// diagrams.io has special requirements for arguments encoding.
 	// Generate the container element with custom code:
