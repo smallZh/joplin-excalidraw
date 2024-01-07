@@ -25,6 +25,7 @@
     "on-build-webpack": "^0.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-hot-toast": "^2.4.1",
     "tar": "^6.0.5",
     "ts-loader": "^7.0.5",
     "typescript": "^5.3.3",
@@ -34,7 +35,6 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@types/node": "^14.0.14",
     "uuid": "^9.0.0"
   }
 }

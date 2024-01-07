@@ -66,6 +66,7 @@ joplin.plugins.register({
     await (joplin as any).window.loadChromeCssFile(excalidrawCssFilePath);
 
     clearDiskCache();
+
     /* support excalidraw dialog */
     await joplin.contentScripts.register(
       ContentScriptType.MarkdownItPlugin,

@@ -2,6 +2,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as ExcalidrawLib from "@excalidraw/excalidraw";
+import toast, { Toaster } from 'react-hot-toast';
 import "./style.css";
 import svgElementToString from '../util/svgElementToString'
 
@@ -26,12 +27,12 @@ const renderSvg = () => {
   if(excalidrawData.elements && excalidrawData.appState){
     ExcalidrawLib.exportToSvg({elements: excalidrawData.elements, appState: excalidrawData.appState, files: null}).then(svgEle => {
       let svgString = svgElementToString(svgEle);
-      console.log(svgString);
       (window.parent.document.getElementById('excalidraw_diagram_svg') as HTMLInputElement).value = svgString;
-      alert('svg render ok!')
+      // show a tip
+      toast.success('render svg ok!')
     })
   }else{
-    alert('no excalidraw json data!!')
+    toast.error('no excalidraw json data!!')
   }
 }
 
@@ -58,18 +59,19 @@ const App = () => {
           );
           (window.parent.document.getElementById('excalidraw_diagram_json') as HTMLInputElement).value = excalidrawJson;
         },
-      },
-      React.createElement(ExcalidrawLib.MainMenu),
-      React.createElement(ExcalidrawLib.Footer, null, 
-        React.createElement(
-          "button",
-          {
-            className: "excalidraw-footer-render-svg",
-            ref: excalidrawWrapperRef,
-            onClick : renderSvg
-          },
-          "Render SVG"
-        )))
+      },React.createElement(ExcalidrawLib.MainMenu),
+        React.createElement(ExcalidrawLib.Footer, null, 
+          React.createElement(
+            "button",
+            {
+              className: "excalidraw-footer-render-svg",
+              ref: excalidrawWrapperRef,
+              onClick : renderSvg
+            },
+            "Render SVG"
+          ))
+      ),
+      React.createElement(Toaster)
     )
   );
 };
