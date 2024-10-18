@@ -2,6 +2,7 @@ import joplin from 'api'
 import { v4 as uuidv4 } from 'uuid'
 import { tmpdir } from 'os'
 import { sep } from 'path'
+import { Sharp } from 'sharp'
 const fs = joplin.require('fs-extra')
 
 const Config = {
@@ -40,9 +41,11 @@ async function writeJsonFile(name: string, data: string, filePath: string = null
 
 async function writeSvgFile(name:string, svgData: string, filePath: string = null) : Promise<string> {
     if (!filePath) {
-        filePath = `${Config.TempFolder}${name}.svg`
+        filePath = `${Config.TempFolder}${name}.png`
     }
-    await fs.writeFile(filePath, svgData)
+    let sharp = new Sharp(svgData)
+    await sharp.toFormat('png').toFile(filePath)
+    // await fs.writeFile(filePath, svgData)
     return filePath
 }
 

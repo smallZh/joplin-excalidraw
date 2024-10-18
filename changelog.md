@@ -1,5 +1,9 @@
 # Joplin changelog
 
+## v1.1.2 - 2024-01-20
+
+- Display the drawing content
+
 ## v1.1.1 - 2022-10-7 18:37:29
 
 - Fix windows open problem
