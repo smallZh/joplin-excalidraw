@@ -2,12 +2,12 @@ import joplin from 'api'
 import { v4 as uuidv4 } from 'uuid'
 import { tmpdir } from 'os'
 import { sep } from 'path'
-import { Sharp } from 'sharp'
 const fs = joplin.require('fs-extra')
 
 const Config = {
     TempFolder: `${tmpdir}${sep}joplin-excalidraw-plugin${sep}`,
     TitlePrefix: 'excalidraw-',
+    IdPrefix: 'excl_'
 }
 
 export interface IDiagramOptions {
@@ -18,9 +18,8 @@ function generateId() {
     return uuidv4().replace(/-/g, '')
 }
 
-function buildTitle(json_resource: string): string {
-    // joplin Unable to put data into other fields except for the title field
-    return Config.TitlePrefix + Date.parse(new Date().toString()) + '_' + json_resource
+function buildTitle(dataType: string): string {
+    return Config.TitlePrefix + Date.parse(new Date().toString()) + '-' + dataType;
 }
 
 export function clearDiskCache(): void {
@@ -34,25 +33,25 @@ async function writeJsonFile(name: string, data: string, filePath: string = null
     if (!filePath) {
         filePath = `${Config.TempFolder}${name}.json`
     }
-    filePath += buildTitle(data)
     await fs.writeFile(filePath, data)
     return filePath
 }
 
 async function writeSvgFile(name:string, svgData: string, filePath: string = null) : Promise<string> {
     if (!filePath) {
-        filePath = `${Config.TempFolder}${name}.png`
+        filePath = `${Config.TempFolder}${name}.svg`
     }
-    let sharp = new Sharp(svgData)
-    await sharp.toFormat('png').toFile(filePath)
-    // await fs.writeFile(filePath, svgData)
+    await fs.writeFile(filePath, svgData)
     return filePath
 }
 
 export async function getDiagramResource(diagramId: string): Promise<{ body: string,  dataJson:string }> {
     let resourceData = await joplin.data.get(['resources', diagramId], { fields: ['id', 'title'] });
-    let title = resourceData.title;
-    let dataJson = title.substring(title.indexOf('_') + 1);
+    let dataId = resourceData.title;
+    const data = await joplin.data.get(['resources', dataId, 'file']);
+    const dataJson = Buffer.from(data.body).toString('utf-8');
+    // let resourceData = await joplin.data.get(['resources', dataId], { fields: ['id', 'path'] });
+    // let dataJson = await fs.readFile(resourceData.path);
     return {
         body: '',
         dataJson: dataJson
@@ -60,19 +59,24 @@ export async function getDiagramResource(diagramId: string): Promise<{ body: str
 }
 
 export async function updateDiagramResource(diagramId:string, dataJson:string, dataSvg: string): Promise<string> {
-    // let filePath = await writeJsonFile(diagramId, dataJson)
+    let resourceData = await joplin.data.get(['resources', diagramId], { fields: ['id', 'title'] });
+    let dataId = resourceData.title;
+    let filePath = await writeJsonFile(dataId, dataJson)
+    await joplin.data.put(['resources', dataId], null, {title: buildTitle('json')}, [{ path: filePath}])
     let svgPath = await writeSvgFile(diagramId, dataSvg);
-    await joplin.data.put(['resources', diagramId], null, {title: buildTitle(dataJson)}, [{ path: svgPath}])
+    await joplin.data.put(['resources', diagramId], null, {title: dataId}, [{ path: svgPath}])
     return diagramId
 }
 
 
 export async function createDiagramResource(dataJson:string, dataSvg: string): Promise<string> {
-    let diagramId = generateId()
-
-    // let filePath = await writeJsonFile(diagramId, dataJson)
+    let dataId = generateId();
+    let filePath = await writeJsonFile(dataId, dataJson);
+    await joplin.data.post(['resources'], null, { id: dataId, title: buildTitle('json') }, [{ path: filePath }])
+    // let diagramId = Config.IdPrefix + dataId.substring(Config.IdPrefix.length);
+    let diagramId = generateId();
     let svgPath = await writeSvgFile(diagramId, dataSvg)
-    await joplin.data.post(['resources'], null, { id: diagramId, title: buildTitle(dataJson) }, [{ path: svgPath }])
+    await joplin.data.post(['resources'], null, { id: diagramId, title: dataId }, [{ path: svgPath }])
 
     return diagramId
 }
